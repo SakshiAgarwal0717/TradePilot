@@ -5,10 +5,16 @@ from app.core.config import settings
 from app.core.exceptions import setup_exception_handlers
 from app.api.v1.router import api_router
 from app.db.session import init_db
+from app.services.ai_provider import sanitize_ssl_environment
+
+# Ensure any dangling SSL environment variables are sanitized on startup
+sanitize_ssl_environment()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Ensure runtime environment is sanitized
+    sanitize_ssl_environment()
     # Initialize SQLite database schema on startup
     init_db()
     yield

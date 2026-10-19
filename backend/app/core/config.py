@@ -16,6 +16,24 @@ class Settings(BaseSettings):
     COOKIE_SECURE: bool = False  # Set to True in production HTTPS
     COOKIE_SAMESITE: str = "lax"
 
+    # AI Review Assistant Settings
+    OPENROUTER_API_KEY: Union[str, None] = None
+    GEMINI_API_KEY: Union[str, None] = None
+    AI_PROVIDER_DEFAULT: str = "openrouter"  # 'openrouter' or 'gemini'
+    AI_MODEL_NAME: str = "meta-llama/llama-3.3-70b-instruct"
+    GEMINI_MODEL_NAME: str = "gemini-2.0-flash"
+    AI_REQUEST_TIMEOUT_SECONDS: float = 30.0
+
+    @field_validator("AI_PROVIDER_DEFAULT")
+    @classmethod
+    def validate_ai_provider(cls, v: str) -> str:
+        normalized = v.strip().lower()
+        if normalized not in ("openrouter", "gemini"):
+            raise ValueError(
+                f"Unsupported AI_PROVIDER_DEFAULT '{v}'. Must be one of: 'openrouter', 'gemini'."
+            )
+        return normalized
+
     BACKEND_CORS_ORIGINS: Union[List[str], str] = [
         "http://localhost:5173",
         "http://127.0.0.1:5173",

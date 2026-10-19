@@ -9,6 +9,7 @@ import {
   Eye,
   CheckCircle2,
   AlertCircle,
+  Sparkles,
 } from 'lucide-react'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -17,6 +18,7 @@ import { Badge } from '@/components/ui/Badge'
 import { EmptyState, LoadingState } from '@/components/ui/States'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { apiRequest, ApiException } from '@/lib/api'
+import { AiTradeReviewModal } from '@/components/journal/AiTradeReviewModal'
 
 export interface Trade {
   id: number
@@ -69,6 +71,7 @@ export function TradingJournalPage() {
   const [editingTrade, setEditingTrade] = React.useState<Trade | null>(null)
   const [viewingTrade, setViewingTrade] = React.useState<Trade | null>(null)
   const [deletingTrade, setDeletingTrade] = React.useState<Trade | null>(null)
+  const [reviewingTrade, setReviewingTrade] = React.useState<Trade | null>(null)
 
   // Form inputs
   const [formSymbol, setFormSymbol] = React.useState('NQ')
@@ -804,13 +807,32 @@ export function TradingJournalPage() {
               )}
             </div>
 
-            <div className="p-4 border-t border-slate-200 bg-slate-50 flex justify-end">
+            <div className="p-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setReviewingTrade(viewingTrade)}
+                className="text-blue-700 border-blue-200 bg-blue-50/50 hover:bg-blue-100 hover:text-blue-800"
+              >
+                <Sparkles className="w-3.5 h-3.5 mr-1.5 text-blue-600" />
+                Review Trade with AI
+              </Button>
               <Button variant="outline" size="sm" onClick={() => setViewingTrade(null)}>
                 Close
               </Button>
             </div>
           </div>
         </div>
+      )}
+
+      {/* AI Trade Review Assistant Modal */}
+      {reviewingTrade && (
+        <AiTradeReviewModal
+          tradeId={reviewingTrade.id}
+          symbol={reviewingTrade.symbol}
+          isOpen={Boolean(reviewingTrade)}
+          onClose={() => setReviewingTrade(null)}
+        />
       )}
 
       {/* Destructive Deletion Confirmation Modal */}

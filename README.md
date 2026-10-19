@@ -46,6 +46,7 @@ TradePilot is an open-source, decision-support platform and risk-aware trading j
 ## 3. Academic & Technical Documentation
 
 Detailed architectural and design specifications are maintained in the [`docs/`](docs/) directory:
+- [AI Trade Review Assistant Reference](docs/ai-trade-review.md) (`docs/ai-trade-review.md`)
 - [Architecture & Data Flow Diagram](docs/architecture.md) (`docs/architecture.md`)
 - [API Contract & Schema Reference](docs/api-contract.md) (`docs/api-contract.md`)
 - [Test Plan & Verification Matrix](docs/test-plan.md) (`docs/test-plan.md`)
