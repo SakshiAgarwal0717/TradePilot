@@ -16,3 +16,25 @@ if os.environ.get("VERCEL") and not os.environ.get("DATABASE_URL"):
 
 # Import the FastAPI application
 from app.main import app
+from app.db.session import init_db
+
+# Initialize database schema on module load for serverless environments
+init_db()
+
+# Provision demo data if running on Vercel and not yet seeded
+if os.environ.get("VERCEL"):
+    try:
+        from app.db.session import SessionLocal
+        from app.crud.operations import get_user_by_email
+        from seed_demo import seed_demo_data
+
+        db = SessionLocal()
+        try:
+            demo_user = get_user_by_email(db, email="demo_trader@tradepilot.io")
+            if not demo_user:
+                seed_demo_data()
+        finally:
+            db.close()
+    except Exception as e:
+        import logging
+        logging.getLogger("uvicorn").warning(f"Demo seeding note: {e}")
