@@ -1,3 +1,4 @@
+import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,6 +18,24 @@ async def lifespan(app: FastAPI):
     sanitize_ssl_environment()
     # Initialize SQLite database schema on startup
     init_db()
+
+    # In serverless/Vercel environment, ensure demo user is automatically provisioned
+    if os.environ.get("VERCEL"):
+        try:
+            from app.db.session import SessionLocal
+            from app.crud.operations import get_user_by_email
+            from seed_demo import seed_demo_data
+
+            db = SessionLocal()
+            try:
+                demo_user = get_user_by_email(db, email="demo_trader@tradepilot.io")
+                if not demo_user:
+                    seed_demo_data()
+            finally:
+                db.close()
+        except Exception:
+            pass
+
     yield
     # Cleanup tasks on shutdown (if any)
 

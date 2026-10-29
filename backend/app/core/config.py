@@ -1,4 +1,5 @@
 import json
+import os
 from typing import List, Union
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -9,6 +10,18 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     API_V1_PREFIX: str = "/api/v1"
     DATABASE_URL: str = "sqlite:///./tradepilot.db"
+
+    @field_validator("DATABASE_URL", mode="before")
+    @classmethod
+    def assemble_database_url(cls, v: Union[str, None]) -> str:
+        if v and v.strip():
+            val = v.strip()
+            if os.environ.get("VERCEL") and val.startswith("sqlite") and "/tmp/" not in val:
+                return "sqlite:////tmp/tradepilot.db"
+            return val
+        if os.environ.get("VERCEL"):
+            return "sqlite:////tmp/tradepilot.db"
+        return "sqlite:///./tradepilot.db"
     SECRET_KEY: str = "temporary-secret-key-tradepilot-auth-change-in-production"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 hours
@@ -37,6 +50,7 @@ class Settings(BaseSettings):
     BACKEND_CORS_ORIGINS: Union[List[str], str] = [
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        "https://*.vercel.app",
     ]
 
     @field_validator("BACKEND_CORS_ORIGINS", mode="before")

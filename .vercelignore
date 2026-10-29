@@ -1,0 +1,11 @@
+.pytest_cache
+.venv
+venv
+__pycache__
+*.pyc
+tests/
+backend/tests/
+frontend/src/test/
+docs/
+*.db
+*.sqlite
